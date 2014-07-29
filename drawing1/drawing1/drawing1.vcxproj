@@ -40,7 +40,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>D:\SDL\include;D:\glew\include\GL;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\SDL\Runtime;D:\glew\bin\Release\x64;D:\SDL\lib\x64;D:\glew\lib\Release\x64;$(LibraryPath)</LibraryPath>
+    <LibraryPath>D:\glew\bin\Release\Win32;D:\SDL\Runtime;D:\SDL\lib\x86;D:\glew\lib\Release\Win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -69,10 +69,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="LoadShaders.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="fshader.frag" />
     <None Include="vshader.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="geometry.h" />
+    <ClInclude Include="LoadShaders.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
