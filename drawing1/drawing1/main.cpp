@@ -3,52 +3,63 @@
 #include <stdio.h>
 #include <SDL.h>
 #include <glew.h>
+#include "App.h"
 #include "LoadShaders.h"
 
 using namespace std;
 
-GLfloat* getScaleMatrix(GLfloat x, GLfloat y, GLfloat z){
-	GLfloat mat[] = {
-		x, 0.0, 0.0,
-		0.0, y, 0.0,
-		0.0, 0.0, z
-	};
-	return mat;
-}
-
 
 int main(int argc, char* argv[])
 {
-	SDL_Init(SDL_INIT_EVERYTHING);
+	if(App::Instance()->Init(SDL_WINDOW_OPENGL, 4) == -1)
+		return 1;
+	while (App::Instance()->isRunning()){
+		App::Instance()->Events();
+		App::Instance()->Update();
+		App::Instance()->Render();
+	}
+	App::Instance()->Cleanup();
+	
+/*	SDL_Init(SDL_INIT_EVERYTHING);
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 16);
 	SDL_Window* window = SDL_CreateWindow("Hello!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 500, 500, SDL_WINDOW_OPENGL);
 
 	SDL_GL_CreateContext(window);
 	glewExperimental = GL_TRUE;
 	if (glewInit() != GLEW_OK){
-		SDL_Quit();
-		exit(EXIT_FAILURE);
+	SDL_Quit();
+	exit(EXIT_FAILURE);
 	}
+	glEnable(GL_PRIMITIVE_RESTART);
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_MULTISAMPLE);
+	glEnable(GL_SAMPLE_COVERAGE);
+	glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+	glSampleCoverage(1.0, GL_FALSE);
+	glCullFace(GL_FRONT);
+	glPrimitiveRestartIndex(0xF);
+
 	GLint w, h;
 	SDL_GetWindowSize(window, &w, &h);
 	GLfloat aspect = GLfloat(w) / GLfloat(h);
-	//GLfloat* scale = getScaleMatrix(1.0, 1.0, 1.0);
 	GLfloat scale[] = {
-		1.0, 0.0, 0.0, 0.0,
-		0.0, aspect, 0.0, 0.0,
-		0.0, 0.0, 1.0, 0.0,
-		0.0, 0.0, 0.0, 1.0
+	1.0, 0.0, 0.0, 0.0,
+	0.0, aspect, 0.0, 0.0,
+	0.0, 0.0, 1.0, 0.0,
+	0.0, 0.0, 0.0, 1.0
 	};
 	GLfloat rotX[] = {
-		1.0, 0.0, 0.0, 0.0,
-		0.0, cosf(180.0 / M_PI*45.0), -sinf(180.0 / M_PI*45.0), 0.0,
-		0.0, sinf(180.0 / M_PI*45.0), cosf(180.0 / M_PI*45.0), 0.0,
-		0.0, 0.0, 0.0, 1.0
+	1.0, 0.0, 0.0, 0.0,
+	0.0, cosf(180.0 / M_PI*45.0), -sinf(180.0 / M_PI*45.0), 0.0,
+	0.0, sinf(180.0 / M_PI*45.0), cosf(180.0 / M_PI*45.0), 0.0,
+	0.0, 0.0, 0.0, 1.0
 	};
 	GLfloat rotZ[] = {
-		cosf(180.0 / M_PI*45.0), -sinf(180.0 / M_PI*45.0), 0.0, 0.0,
-		sinf(180.0 / M_PI*45.0), cosf(180.0 / M_PI*45.0), 0.0, 0.0,
-		0.0, 0.0, 1.0, 0.0,
-		0.0, 0.0, 0.0, 1.0
+	cosf(180.0 / M_PI*45.0), -sinf(180.0 / M_PI*45.0), 0.0, 0.0,
+	sinf(180.0 / M_PI*45.0), cosf(180.0 / M_PI*45.0), 0.0, 0.0,
+	0.0, 0.0, 1.0, 0.0,
+	0.0, 0.0, 0.0, 1.0
 	};
 
 	GLuint vbuffer;
@@ -64,20 +75,20 @@ int main(int argc, char* argv[])
 	0.5, 0.5, 0.5, 1.0
 	};
 	GLfloat vert_colors[] =
-	{ 1.0, 1.0, 1.0, 0.5,
+	{ 1.0, 1.0, 1.0, 1.0,
 	0.0, 1.0, 1.0, 1.0,
-	1.0, 1.0, 0.0, 0.5,
-	1.0, 0.0, 1.0, 0.5,
+	1.0, 1.0, 0.0, 1.0,
+	1.0, 0.0, 1.0, 1.0,
 	1.0, 0.0, 0.0, 1.0,
-	0.0, 1.0, 0.0, 0.5,
+	0.0, 1.0, 0.0, 1.0,
 	0.0, 0.0, 1.0, 1.0,
-	0.5, 0.5, 0.5, 0.5, };
-	glEnable(GL_PRIMITIVE_RESTART);
-	glPrimitiveRestartIndex(0xF);
+	0.5, 0.5, 0.5, 1.0, };
+
+
 	static const GLushort indices[] = {
-		0, 1, 2, 3, 6, 7, 4, 5,
-		0xF,
-		2, 6, 0, 4, 1, 5, 3, 7
+	0, 1, 2, 3, 6, 7, 4, 5,
+	0xF,
+	2, 6, 0, 4, 1, 5, 3, 7
 	};
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -107,8 +118,12 @@ int main(int argc, char* argv[])
 	program = LoadShaders(shaders);
 	glUseProgram(program);
 
-
-
+	GLint SampleBuffers, SamplesPerPixel;
+	GLfloat SampleCoords[2];
+	glGetIntegerv(GL_SAMPLE_BUFFERS, &SampleBuffers);
+	glGetIntegerv(GL_SAMPLES, &SamplesPerPixel);
+	if (SampleBuffers)
+	glGetMultisamplefv(GL_SAMPLE_POSITION, 0, SampleCoords);
 	GLint posIndex = glGetAttribLocation(program, "vPosition");
 	GLint colIndex = glGetAttribLocation(program, "vColor");
 	GLint scalemIndex = glGetUniformLocation(program, "scale_m");
@@ -130,18 +145,20 @@ int main(int argc, char* argv[])
 
 	SDL_GL_SwapWindow(window);
 	while (1){
-		SDL_Event event;
-		SDL_PollEvent(&event);
-		if (event.type == SDL_QUIT){
-			glDeleteBuffers(1, &ebuffer);
-			glDeleteBuffers(1, &vbuffer);
-			glDeleteProgram(program);
-			glFlush();
-			SDL_DestroyWindow(window);
-			SDL_Quit();
-			break;
-		}
+	SDL_Event event;
+	SDL_PollEvent(&event);
+	if (event.type == SDL_QUIT){
+	glDeleteBuffers(1, &ebuffer);
+	glDeleteBuffers(1, &vbuffer);
+	glDeleteProgram(program);
+	glFlush();
+	SDL_GL_DeleteContext(SDL_GL_GetCurrentContext());
+	SDL_DestroyWindow(window);
+	SDL_Quit();
+	break;
 	}
+	}*/
+
 	return 0;
 }
 

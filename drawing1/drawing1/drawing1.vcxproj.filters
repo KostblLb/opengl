@@ -21,6 +21,9 @@
     <ClCompile Include="LoadShaders.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
+    <ClCompile Include="App.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="vshader.vert">
@@ -34,7 +37,7 @@
     <ClInclude Include="LoadShaders.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="geometry.h">
+    <ClInclude Include="App.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>
