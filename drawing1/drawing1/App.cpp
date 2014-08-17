@@ -27,7 +27,7 @@ int App::Init(Uint32 WindowFlags, int samples){
 	}
 
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-	//SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 8);
 	window = SDL_CreateWindow("Hello!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 500, 500, WindowFlags);
 	SDL_GL_CreateContext(window);
 	glewExperimental = GL_TRUE;
@@ -38,12 +38,11 @@ int App::Init(Uint32 WindowFlags, int samples){
 
 	/*glEnable(), settings block*/
 	glEnable(GL_PRIMITIVE_RESTART);
-	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_MULTISAMPLE);
 	glEnable(GL_STENCIL_TEST);
 	glEnable(GL_SAMPLE_COVERAGE);
 	glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
-	glCullFace(GL_FRONT);
 	glPrimitiveRestartIndex(0xF);
 	glSampleCoverage(1.0, GL_FALSE);
 	SDL_GL_SetSwapInterval(1);
@@ -54,9 +53,8 @@ int App::Init(Uint32 WindowFlags, int samples){
 	{ GL_NONE, NULL } };
 	program = LoadShaders(shaders);
 	glUseProgram(program);
-	glClearColor(1.0, 1.0, 1.0, 1.0);
-	glClearStencil(0x1);
-	glClear(GL_COLOR_BUFFER_BIT);
+
+	return 0;
 }
 
 void App::Events(){
@@ -130,19 +128,22 @@ void App::Render(){
 		0.0, 0.0, 0.0, 1.0
 	};
 
-	GLuint buffers[3];
-	GLuint vao[2];
-	glClearStencil(0x0);
-	glClear(GL_COLOR_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);	
+	
+	glClearColor(1.0, 1.0, 1.0, 1.0);
+	glClearStencil(0x1);
+	glClear(GL_COLOR_BUFFER_BIT|GL_STENCIL_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);	
 	GLint rotX_loc = glGetUniformLocation(program, "rotX");
 	GLint rotZ_loc = glGetUniformLocation(program, "rotZ");
 	glUniformMatrix4fv(rotX_loc, 1, GL_FALSE, rotX);
 	glUniformMatrix4fv(rotZ_loc, 1, GL_FALSE, rotZ);
+
+	GLuint buffers[3];
+	GLuint vao[2];
 	glGenBuffers(3, buffers);
 	glGenVertexArrays(2, vao);
 
 	/*plane*/
-	glStencilFunc(GL_NEVER, 0x1, 0xF);
+	glStencilFunc(GL_NEVER, 0x0, 0xF);
 	glStencilOp(GL_REPLACE, GL_KEEP, GL_KEEP);
 	glStencilMask(0xF);
 	glBindVertexArray(vao[1]);
