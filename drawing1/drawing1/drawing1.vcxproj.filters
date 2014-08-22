@@ -24,6 +24,9 @@
     <ClCompile Include="App.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
+    <ClCompile Include="GLobject.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="vshader.vert">
@@ -38,6 +41,9 @@
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="App.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="GLobject.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>

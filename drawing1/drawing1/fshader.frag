@@ -1,8 +1,8 @@
-#version 430 
-sample in vec4 fColor;
+#version 400 
+in vec4 fColor;
 out vec4 color;
 
-void main(){
+void main(void){
 
-	color = vec4(fColor.r, fColor.g, fColor.b, 1.0);
+	color = vec4(fColor.r, fColor.g, fColor.b, fColor.a);
 	}

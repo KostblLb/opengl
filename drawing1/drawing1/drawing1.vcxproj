@@ -71,6 +71,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="GLobject.cpp" />
     <ClCompile Include="LoadShaders.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -80,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
+    <ClInclude Include="GLobject.h" />
     <ClInclude Include="LoadShaders.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
