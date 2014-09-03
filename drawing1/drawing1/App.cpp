@@ -10,8 +10,8 @@ App* App::a = NULL;
 SDL_Window* window;
 GLuint program;
 GLint currentFrame = 0;
-
-//GLobject cube((GLfloat*)vertices, (GLfloat*)vert_colors, (GLushort*)indices);
+GLobject cube;
+GLobject check;
 int App::Init(Uint32 WindowFlags, int samples){
 	try{
 		if (SDL_Init(SDL_INIT_VIDEO)) {
@@ -59,8 +59,8 @@ int App::Init(Uint32 WindowFlags, int samples){
 	{ GL_NONE, NULL } };
 	program = LoadShaders(shaders);
 	glUseProgram(program);
-	GLobject cube;
 	cube.LoadObject("cube.ogo");
+	check.LoadObject("check.ogo");
 	return 0;
 }
 
@@ -88,7 +88,7 @@ void App::Cleanup(){
 
 void App::Render(){
 	
-
+	
 	GLfloat stencil[] = {
 		-0.7, -0.7, -0.5, 1.0,
 		-0.7, 0.7, -0.5, 1.0,
@@ -98,6 +98,7 @@ void App::Render(){
 	GLushort stencil_indices[] = {
 		0, 3, 2, 1, 0
 	};
+	/*
 	GLfloat vertices[] =
 	{ -0.5, -0.5, -0.5, 1.0,
 	-0.5, -0.5, 0.5, 1.0,
@@ -117,13 +118,14 @@ void App::Render(){
 	0.0, 1.0, 0.0, 1.0,
 	0.0, 0.0, 7.0, .2,
 	0.5, 0.5, 0.5, 1.0 };
-
+	
 
 	static const GLushort indices[] = {
 		0, 1, 2, 3, 6, 7, 4, 5,
 		0xF,
 		2, 6, 0, 4, 1, 5, 3, 7
 	};
+	*/
 	GLfloat rotX[] = {
 		1.0, 0.0, 0.0, 0.0,
 		0.0, cosf(180.0 / M_PI*45.0), -sinf(180.0 / M_PI*45.0), 0.0,
@@ -169,18 +171,29 @@ void App::Render(){
 	glPolygonOffset(1.0, 1.0);
 	glDrawElements(GL_TRIANGLE_STRIP, 5, GL_UNSIGNED_SHORT, NULL);
 
+	/*щит для проверки препятствий*/
+	glBufferData(GL_ARRAY_BUFFER, check.getVerticesSize() + check.getColorSize(), NULL, GL_STATIC_DRAW);
+	glBufferSubData(GL_ARRAY_BUFFER, NULL, check.getVerticesSize(), check.getVertices());
+	glBufferSubData(GL_ARRAY_BUFFER, check.getVerticesSize(), check.getColorSize(), check.getColor());
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, check.getIndicesSize(), check.getIndices(), GL_STATIC_DRAW);
+	glPolygonOffset(0.0, 0.0);
+	glDrawElements(GL_TRIANGLE_STRIP, 5, GL_UNSIGNED_SHORT, NULL);
+
 	/*cube*/
+	GLuint query;
+	glGenQueries(1, &query);
+	//glBeg
 	glStencilFunc(GL_EQUAL, 0x1, 0xFF);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[0]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, cube.getIndicesSize(), cube.getIndices(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, buffers[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices) + sizeof(vert_colors), NULL, GL_STATIC_DRAW);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-	glBufferSubData(GL_ARRAY_BUFFER, sizeof(vertices), sizeof(vert_colors), vert_colors);
+	glBufferData(GL_ARRAY_BUFFER, cube.getVerticesSize() + cube.getColorSize(), NULL, GL_STATIC_DRAW);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, cube.getVerticesSize(), cube.getVertices());
+	glBufferSubData(GL_ARRAY_BUFFER, cube.getVerticesSize(), cube.getColorSize(), cube.getColor());
 	glBindVertexArray(vao[0]);
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, NULL);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)sizeof(vertices));
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)cube.getVerticesSize());
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[0]);
@@ -188,17 +201,17 @@ void App::Render(){
 	glPolygonOffset(.0, .0);
 	glDrawElements(GL_TRIANGLE_STRIP, 17, GL_UNSIGNED_SHORT, NULL);
 
-	/*line*/
-	int s = sizeof(vert_colors)/sizeof(float);
-	for (int i = 0; i < s; i++){
-			vert_colors[i] += 0.5;
+	/*/line*/
+	int s = (int) cube.getColorSize()/sizeof(float);
+	/*for (int i = 0; i < s; i++){
+			cube.getColor()[i] += 0.5;
 	}
-	glBufferSubData(GL_ARRAY_BUFFER, sizeof(vertices), sizeof(vert_colors), vert_colors);	
+	glBufferSubData(GL_ARRAY_BUFFER, cube.getVerticesSize(), cube.getColorSize(), cube.getColor());	
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glLineWidth(2.0);
+	glLineWidth(3.0);
 	if (glIsEnabled(GL_POLYGON_OFFSET_LINE))
 	glPolygonOffset(-1.0, 1.0);
-	glDrawElements(GL_LINE_STRIP, 17, GL_UNSIGNED_SHORT, NULL);
+	glDrawElements(GL_LINE_STRIP, 17, GL_UNSIGNED_SHORT, NULL);*/
 
 	SDL_GL_SwapWindow(window);
 
